@@ -56,8 +56,8 @@
         <div id="settingsModal" class="modal-overlay fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div class="bg-gradient-to-br from-purple-900 to-blue-900 border border-purple-500/30 rounded-lg p-6 max-w-md w-full max-h-96 overflow-y-auto">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold">⚙️ Configuration API</h2>
-                    <button id="closeSettingsBtn" class="p-1 hover:bg-white/10 rounded transition-colors">
+                    <h2 class="text-2xl font-bold">⚙️ Configuration</h2>
+                    <button id="closeSettingsBtn" class="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer">
                         ✕
                     </button>
                 </div>
@@ -73,9 +73,6 @@
                             placeholder="Copier depuis l'URL entre /d/ et /edit"
                             class="w-full px-3 py-2 bg-white/10 border border-purple-500/30 rounded focus:outline-none focus:border-purple-500 text-white text-sm"
                         />
-                        <p class="text-xs text-purple-400 mt-1">
-                            URL: https://docs.google.com/spreadsheets/d/<strong>VOTRE_ID</strong>/edit
-                        </p>
                     </div>
 
                     <div>
@@ -88,44 +85,86 @@
                             placeholder="AIzaSy..."
                             class="w-full px-3 py-2 bg-white/10 border border-purple-500/30 rounded focus:outline-none focus:border-purple-500 text-white text-sm"
                         />
-                        <p class="text-xs text-purple-400 mt-1">
-                            Créez-la sur <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:underline">Google Cloud Console</a>
-                        </p>
                     </div>
 
                     <div>
                         <label class="block text-sm font-semibold mb-2 text-purple-300">
-                            📑 Nom de la feuille
+                            🔗 URL Google Apps Script
                         </label>
                         <input
                             type="text"
-                            id="sheetName"
-                            placeholder="Soirées"
-                            value="Soirées"
+                            id="scriptUrl"
+                            placeholder="https://script.google.com/macros/d/..."
                             class="w-full px-3 py-2 bg-white/10 border border-purple-500/30 rounded focus:outline-none focus:border-purple-500 text-white text-sm"
                         />
                         <p class="text-xs text-purple-400 mt-1">
-                            Voir les onglets en bas de votre Google Sheet
+                            Voir le guide pour obtenir cette URL
                         </p>
                     </div>
-                </div>
-
-                <div class="bg-yellow-500/20 border border-yellow-500/50 rounded p-3 mb-6">
-                    <p class="text-yellow-200 text-xs">
-                        <strong>⚠️ Important :</strong> Votre Google Sheet doit avoir les colonnes : <strong>ARTISTE | TITRE | DUOS | TOP</strong>
-                    </p>
                 </div>
 
                 <div class="space-y-3">
                     <button
                         id="saveConfigBtn"
-                        class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-4 py-2 rounded-lg font-semibold transition-all"
+                        class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-4 py-2 rounded-lg font-semibold transition-all cursor-pointer"
                     >
                         💾 Enregistrer
                     </button>
                     <button
                         id="cancelConfigBtn"
-                        class="w-full bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg font-semibold transition-all"
+                        class="w-full bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg font-semibold transition-all cursor-pointer"
+                    >
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Chanson Sélectionnée -->
+        <div id="songModal" class="modal-overlay fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div class="bg-gradient-to-br from-purple-900 to-blue-900 border border-purple-500/30 rounded-lg p-6 max-w-md w-full">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold">🎤 Vous avez choisi</h2>
+                    <button id="closeSongModalBtn" class="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer">
+                        ✕
+                    </button>
+                </div>
+
+                <div id="selectedSongInfo" class="mb-6">
+                    <p id="selectedSongName" class="text-xl font-bold text-white mb-1"></p>
+                    <p id="selectedSongArtist" class="text-purple-300 text-sm"></p>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-2 text-purple-300">
+                        👤 Votre prénom
+                    </label>
+                    <input
+                        type="text"
+                        id="prenomInput"
+                        placeholder="Entrez votre prénom"
+                        class="w-full px-3 py-2 bg-white/10 border border-purple-500/30 rounded focus:outline-none focus:border-purple-500 text-white text-sm"
+                    />
+                </div>
+
+                <div id="submitError" class="hidden bg-red-500/20 border border-red-500 rounded p-3 mb-4">
+                    <p id="submitErrorText" class="text-red-200 text-sm"></p>
+                </div>
+
+                <div id="submitSuccess" class="hidden bg-green-500/20 border border-green-500 rounded p-3 mb-4">
+                    <p class="text-green-200 text-sm">✅ Chanson enregistrée !</p>
+                </div>
+
+                <div class="space-y-3">
+                    <button
+                        id="submitSongBtn"
+                        class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-4 py-2 rounded-lg font-semibold transition-all cursor-pointer"
+                    >
+                        ✅ Envoyer
+                    </button>
+                    <button
+                        id="closeSongBtn"
+                        class="w-full bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg font-semibold transition-all cursor-pointer"
                     >
                         Annuler
                     </button>
@@ -138,13 +177,13 @@
             <!-- Configuration Required -->
             <div id="configRequired" class="bg-blue-500/20 border border-blue-500 rounded-lg p-6 mb-8 text-center">
                 <div class="text-4xl mb-4">⚙️</div>
-                <h2 class="text-xl font-bold mb-2">Configuration API Google Sheets</h2>
+                <h2 class="text-xl font-bold mb-2">Configuration requise</h2>
                 <p class="text-blue-200 mb-4">
-                    Cliquez sur l'icône d'engrenage pour configurer votre Google Sheet
+                    Cliquez sur l'icône d'engrenage pour configurer votre application
                 </p>
                 <button
                     id="openSettingsBtn"
-                    class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-6 py-2 rounded-lg font-semibold"
+                    class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-6 py-2 rounded-lg font-semibold cursor-pointer"
                 >
                     ⚙️ Configurer maintenant
                 </button>
@@ -152,18 +191,21 @@
 
             <!-- Tabs -->
             <div id="tabsContainer" class="hidden flex flex-wrap gap-2 mb-8">
-                <button class="tab-btn active flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg shadow-purple-500/50" data-tab="all">
+                <button class="tab-btn active px-6 py-3 rounded-lg font-semibold transition-all duration-300 bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg shadow-purple-500/50 cursor-pointer" data-tab="all">
                     🎵 Toutes les chansons
                 </button>
-                <button class="tab-btn flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 bg-white/10 hover:bg-white/20 border border-purple-500/30" data-tab="duo">
+                <button class="tab-btn px-6 py-3 rounded-lg font-semibold transition-all duration-300 bg-white/10 hover:bg-white/20 border border-purple-500/30 cursor-pointer" data-tab="duo">
                     👥 Duos
                 </button>
-                <button class="tab-btn flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 bg-white/10 hover:bg-white/20 border border-purple-500/30" data-tab="top">
+                <button class="tab-btn px-6 py-3 rounded-lg font-semibold transition-all duration-300 bg-white/10 hover:bg-white/20 border border-purple-500/30 cursor-pointer" data-tab="top">
                     ⭐ Top chansons
+                </button>
+                <button class="tab-btn px-6 py-3 rounded-lg font-semibold transition-all duration-300 bg-white/10 hover:bg-white/20 border border-purple-500/30 cursor-pointer" data-tab="search">
+                    🔍 Recherche
                 </button>
             </div>
 
-            <!-- Search Bar -->
+            <!-- Search Bar (visible seulement en onglet recherche) -->
             <div id="searchContainer" class="hidden mb-8">
                 <div class="relative">
                     <span class="absolute left-4 top-4 text-purple-400">🔍</span>
@@ -171,7 +213,7 @@
                         type="text"
                         id="searchInput"
                         placeholder="Rechercher par nom de chanson ou artiste..."
-                        class="w-full pl-12 pr-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/50 text-white placeholder-purple-300"
+                        class="w-full pl-12 pr-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/50 text-white placeholder-purple-300 cursor-text"
                     />
                 </div>
             </div>
@@ -185,19 +227,9 @@
             <!-- Error State -->
             <div id="errorState" class="hidden bg-red-500/20 border border-red-500 rounded-lg p-4 mb-8">
                 <p id="errorMessage" class="text-red-200 font-semibold mb-2"></p>
-                <p class="text-red-300 text-sm">
-                    Vérifiez que :
-                </p>
-                <ul class="text-red-300 text-sm mt-2 list-disc list-inside space-y-1">
-                    <li>Votre clé API est correcte</li>
-                    <li>Votre Sheet ID est correct</li>
-                    <li>Votre Google Sheet est rendu PUBLIC</li>
-                    <li>Le nom de la feuille est correct</li>
-                    <li>Les colonnes sont : ARTISTE | TITRE | DUOS | TOP</li>
-                </ul>
                 <button
                     id="editConfigBtn"
-                    class="mt-4 bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-sm font-semibold transition-colors"
+                    class="mt-4 bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-sm font-semibold transition-colors cursor-pointer"
                 >
                     Modifier la configuration
                 </button>
@@ -233,10 +265,11 @@
         let allSongs = [];
         let filteredSongs = [];
         let currentTab = 'all';
+        let currentSong = null;
         let config = {
             sheetId: '',
             apiKey: '',
-            sheetName: 'Soirées'
+            scriptUrl: ''
         };
 
         // Éléments du DOM
@@ -249,7 +282,7 @@
         const editConfigBtn = document.getElementById('editConfigBtn');
         const sheetIdInput = document.getElementById('sheetId');
         const apiKeyInput = document.getElementById('apiKey');
-        const sheetNameInput = document.getElementById('sheetName');
+        const scriptUrlInput = document.getElementById('scriptUrl');
         const searchInput = document.getElementById('searchInput');
         const songsGrid = document.getElementById('songsGrid');
         const loadingState = document.getElementById('loadingState');
@@ -262,6 +295,18 @@
         const resultText = document.getElementById('resultText');
         const emptyState = document.getElementById('emptyState');
         const songCount = document.getElementById('songCount');
+        
+        // Song Modal
+        const songModal = document.getElementById('songModal');
+        const closeSongModalBtn = document.getElementById('closeSongModalBtn');
+        const selectedSongName = document.getElementById('selectedSongName');
+        const selectedSongArtist = document.getElementById('selectedSongArtist');
+        const prenomInput = document.getElementById('prenomInput');
+        const submitSongBtn = document.getElementById('submitSongBtn');
+        const closeSongBtn = document.getElementById('closeSongBtn');
+        const submitError = document.getElementById('submitError');
+        const submitErrorText = document.getElementById('submitErrorText');
+        const submitSuccess = document.getElementById('submitSuccess');
 
         // Charger la configuration depuis localStorage
         function loadConfig() {
@@ -270,7 +315,7 @@
                 config = JSON.parse(saved);
                 sheetIdInput.value = config.sheetId;
                 apiKeyInput.value = config.apiKey;
-                sheetNameInput.value = config.sheetName;
+                scriptUrlInput.value = config.scriptUrl;
                 return true;
             }
             return false;
@@ -280,9 +325,9 @@
         function saveConfig() {
             config.sheetId = sheetIdInput.value.trim();
             config.apiKey = apiKeyInput.value.trim();
-            config.sheetName = sheetNameInput.value.trim();
+            config.scriptUrl = scriptUrlInput.value.trim();
             
-            if (!config.sheetId || !config.apiKey) {
+            if (!config.sheetId || !config.apiKey || !config.scriptUrl) {
                 alert('Veuillez remplir tous les champs');
                 return;
             }
@@ -292,13 +337,28 @@
             fetchSongs();
         }
 
-        // Ouvrir/Fermer le modal
+        // Ouvrir/Fermer les modals
         function openModal() {
             settingsModal.classList.add('active');
         }
 
         function closeModal() {
             settingsModal.classList.remove('active');
+        }
+
+        function openSongModal(song) {
+            currentSong = song;
+            selectedSongName.textContent = song.nom;
+            selectedSongArtist.textContent = song.artiste;
+            prenomInput.value = '';
+            submitError.classList.add('hidden');
+            submitSuccess.classList.add('hidden');
+            songModal.classList.add('active');
+        }
+
+        function closeSongModal() {
+            songModal.classList.remove('active');
+            currentSong = null;
         }
 
         // Récupérer les chansons via Google Sheets API
@@ -312,7 +372,7 @@
             configRequired.classList.add('hidden');
 
             try {
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${encodeURIComponent(config.sheetName)}?key=${config.apiKey}`;
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/Titres?key=${config.apiKey}`;
                 
                 const response = await fetch(url);
                 const data = await response.json();
@@ -320,7 +380,6 @@
                 if (data.error) {
                     handleError(data.error.message);
                 } else if (data.values && data.values.length > 0) {
-                    // Structure : ARTISTE | TITRE | DUOS | TOP
                     const rows = data.values.slice(1);
                     
                     allSongs = rows
@@ -337,7 +396,6 @@
                     } else {
                         songCount.textContent = `${allSongs.length} chansons disponibles`;
                         tabsContainer.classList.remove('hidden');
-                        searchContainer.classList.remove('hidden');
                         configRequired.classList.add('hidden');
                         filterSongs();
                         renderSongs();
@@ -356,18 +414,15 @@
         function handleError(message) {
             let friendlyMessage = message;
             if (message.includes('Invalid API key')) {
-                friendlyMessage = '❌ Clé API invalide ou expirée. Attendez 5-10 minutes et réessayez.';
-            } else if (message.includes('Requested range contains a blank range')) {
-                friendlyMessage = '❌ Le nom de la feuille est incorrect. Vérifiez en bas de votre Google Sheet.';
+                friendlyMessage = '❌ Clé API invalide ou expirée.';
             } else if (message.includes('permission')) {
-                friendlyMessage = '❌ Le Sheet n\'est pas public. Rendez-le public dans les paramètres de partage.';
+                friendlyMessage = '❌ Le Sheet n\'est pas public.';
             }
             
             errorMessage.textContent = friendlyMessage;
             errorState.classList.remove('hidden');
             loadingState.classList.add('hidden');
             tabsContainer.classList.add('hidden');
-            searchContainer.classList.add('hidden');
         }
 
         // Filtrer les chansons
@@ -378,10 +433,8 @@
                 filteredSongs = filteredSongs.filter(song => song.duo);
             } else if (currentTab === 'top') {
                 filteredSongs = filteredSongs.filter(song => song.top);
-            }
-
-            const searchTerm = searchInput.value.toLowerCase();
-            if (searchTerm) {
+            } else if (currentTab === 'search') {
+                const searchTerm = searchInput.value.toLowerCase();
                 filteredSongs = filteredSongs.filter(song =>
                     song.nom.toLowerCase().includes(searchTerm) ||
                     song.artiste.toLowerCase().includes(searchTerm)
@@ -403,7 +456,7 @@
             } else {
                 emptyState.classList.add('hidden');
                 songsGrid.innerHTML = filteredSongs.map((song, index) => `
-                    <div class="group bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur border border-purple-500/30 rounded-lg p-4 hover:from-purple-500/40 hover:to-pink-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30">
+                    <div class="group bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur border border-purple-500/30 rounded-lg p-4 hover:from-purple-500/40 hover:to-pink-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30 cursor-pointer" onclick="selectSong('${song.nom.replace(/'/g, "\\'")}', '${song.artiste.replace(/'/g, "\\'")}')">
                         <div class="flex items-start justify-between mb-2">
                             <div class="flex-1">
                                 <h3 class="text-lg font-bold text-white group-hover:text-purple-200 transition-colors">
@@ -422,6 +475,65 @@
             }
         }
 
+        // Sélectionner une chanson
+        function selectSong(nom, artiste) {
+            openSongModal({ nom, artiste });
+        }
+
+        // Soumettre la chanson
+        async function submitSong() {
+            const prenom = prenomInput.value.trim();
+            
+            if (!prenom) {
+                submitErrorText.textContent = 'Veuillez entrer votre prénom';
+                submitError.classList.remove('hidden');
+                return;
+            }
+
+            if (!config.scriptUrl) {
+                submitErrorText.textContent = 'Script URL non configurée';
+                submitError.classList.remove('hidden');
+                return;
+            }
+
+            submitSongBtn.disabled = true;
+            submitSongBtn.textContent = '⏳ Envoi...';
+
+            try {
+                const response = await fetch(config.scriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prenom: prenom,
+                        chanson: currentSong.nom,
+                        artiste: currentSong.artiste
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    submitError.classList.add('hidden');
+                    submitSuccess.classList.remove('hidden');
+                    prenomInput.value = '';
+                    setTimeout(() => {
+                        closeSongModal();
+                    }, 2000);
+                } else {
+                    submitErrorText.textContent = 'Erreur: ' + (result.error || 'Erreur inconnue');
+                    submitError.classList.remove('hidden');
+                }
+            } catch (err) {
+                submitErrorText.textContent = 'Erreur de connexion: ' + err.message;
+                submitError.classList.remove('hidden');
+            } finally {
+                submitSongBtn.disabled = false;
+                submitSongBtn.textContent = '✅ Envoyer';
+            }
+        }
+
         // Event Listeners - Settings
         settingsBtn.addEventListener('click', openModal);
         openSettingsBtn.addEventListener('click', openModal);
@@ -429,6 +541,14 @@
         saveConfigBtn.addEventListener('click', saveConfig);
         cancelConfigBtn.addEventListener('click', closeModal);
         editConfigBtn.addEventListener('click', openModal);
+
+        // Event Listeners - Song Modal
+        closeSongModalBtn.addEventListener('click', closeSongModal);
+        closeSongBtn.addEventListener('click', closeSongModal);
+        submitSongBtn.addEventListener('click', submitSong);
+        prenomInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') submitSong();
+        });
 
         // Event Listeners - Tabs
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -440,6 +560,13 @@
                 e.target.classList.add('active', 'bg-gradient-to-r', 'from-purple-500', 'to-pink-500', 'shadow-lg', 'shadow-purple-500/50');
                 e.target.classList.remove('bg-white/10', 'border', 'border-purple-500/30');
                 currentTab = e.target.dataset.tab;
+                
+                if (currentTab === 'search') {
+                    searchContainer.classList.remove('hidden');
+                } else {
+                    searchContainer.classList.add('hidden');
+                }
+                
                 searchInput.value = '';
                 renderSongs();
             });
@@ -448,11 +575,13 @@
         // Event Listeners - Search
         searchInput.addEventListener('input', renderSongs);
 
-        // Fermer le modal en cliquant en dehors
+        // Fermer les modals en cliquant en dehors
         settingsModal.addEventListener('click', (e) => {
-            if (e.target === settingsModal) {
-                closeModal();
-            }
+            if (e.target === settingsModal) closeModal();
+        });
+        
+        songModal.addEventListener('click', (e) => {
+            if (e.target === songModal) closeSongModal();
         });
 
         // Initialiser l'app
