@@ -56,7 +56,7 @@
         <div id="settingsModal" class="modal-overlay fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div class="bg-gradient-to-br from-purple-900 to-blue-900 border border-purple-500/30 rounded-lg p-6 max-w-md w-full max-h-96 overflow-y-auto">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold">⚙️ Configuration</h2>
+                    <h2 class="text-2xl font-bold">⚙️ Configuration API</h2>
                     <button id="closeSettingsBtn" class="p-1 hover:bg-white/10 rounded transition-colors">
                         ✕
                     </button>
@@ -70,11 +70,11 @@
                         <input
                             type="text"
                             id="sheetId"
-                            placeholder="1mN8kX5vY9qWpZaB2cC3dD4eE5fF6gG7hH8iI9jJ0kK"
+                            placeholder="Copier depuis l'URL entre /d/ et /edit"
                             class="w-full px-3 py-2 bg-white/10 border border-purple-500/30 rounded focus:outline-none focus:border-purple-500 text-white text-sm"
                         />
                         <p class="text-xs text-purple-400 mt-1">
-                            Trouvez-le dans l'URL de votre Google Sheet entre /d/ et /edit
+                            URL: https://docs.google.com/spreadsheets/d/<strong>VOTRE_ID</strong>/edit
                         </p>
                     </div>
 
@@ -85,7 +85,7 @@
                         <input
                             type="password"
                             id="apiKey"
-                            placeholder="AIzaSyD_wkl8vB2c3vH9jK4lM5nO6pQ7rS8tU9vW"
+                            placeholder="AIzaSy..."
                             class="w-full px-3 py-2 bg-white/10 border border-purple-500/30 rounded focus:outline-none focus:border-purple-500 text-white text-sm"
                         />
                         <p class="text-xs text-purple-400 mt-1">
@@ -100,14 +100,20 @@
                         <input
                             type="text"
                             id="sheetName"
-                            placeholder="Feuille1"
-                            value="Feuille1"
+                            placeholder="Soirées"
+                            value="Soirées"
                             class="w-full px-3 py-2 bg-white/10 border border-purple-500/30 rounded focus:outline-none focus:border-purple-500 text-white text-sm"
                         />
                         <p class="text-xs text-purple-400 mt-1">
                             Voir les onglets en bas de votre Google Sheet
                         </p>
                     </div>
+                </div>
+
+                <div class="bg-yellow-500/20 border border-yellow-500/50 rounded p-3 mb-6">
+                    <p class="text-yellow-200 text-xs">
+                        <strong>⚠️ Important :</strong> Votre Google Sheet doit avoir les colonnes : <strong>ARTISTE | TITRE | DUOS | TOP</strong>
+                    </p>
                 </div>
 
                 <div class="space-y-3">
@@ -132,9 +138,9 @@
             <!-- Configuration Required -->
             <div id="configRequired" class="bg-blue-500/20 border border-blue-500 rounded-lg p-6 mb-8 text-center">
                 <div class="text-4xl mb-4">⚙️</div>
-                <h2 class="text-xl font-bold mb-2">Configuration requise</h2>
+                <h2 class="text-xl font-bold mb-2">Configuration API Google Sheets</h2>
                 <p class="text-blue-200 mb-4">
-                    Cliquez sur l'icône d'engrenage en haut à droite pour configurer votre Google Sheet
+                    Cliquez sur l'icône d'engrenage pour configurer votre Google Sheet
                 </p>
                 <button
                     id="openSettingsBtn"
@@ -186,8 +192,8 @@
                     <li>Votre clé API est correcte</li>
                     <li>Votre Sheet ID est correct</li>
                     <li>Votre Google Sheet est rendu PUBLIC</li>
-                    <li>Le nom de la feuille correspond (vérifiez les espaces)</li>
-                    <li>L'API Google Sheets est activée</li>
+                    <li>Le nom de la feuille est correct</li>
+                    <li>Les colonnes sont : ARTISTE | TITRE | DUOS | TOP</li>
                 </ul>
                 <button
                     id="editConfigBtn"
@@ -230,7 +236,7 @@
         let config = {
             sheetId: '',
             apiKey: '',
-            sheetName: 'Feuille1'
+            sheetName: 'Soirées'
         };
 
         // Éléments du DOM
@@ -275,6 +281,12 @@
             config.sheetId = sheetIdInput.value.trim();
             config.apiKey = apiKeyInput.value.trim();
             config.sheetName = sheetNameInput.value.trim();
+            
+            if (!config.sheetId || !config.apiKey) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+            
             localStorage.setItem('karaokeConfig', JSON.stringify(config));
             closeModal();
             fetchSongs();
@@ -289,7 +301,7 @@
             settingsModal.classList.remove('active');
         }
 
-        // Récupérer les chansons via le backend Vercel
+        // Récupérer les chansons via Google Sheets API
         async function fetchSongs() {
             if (!config.sheetId || !config.apiKey) {
                 return;
@@ -300,37 +312,37 @@
             configRequired.classList.add('hidden');
 
             try {
-                // Déterminer l'URL de base (localhost ou Vercel)
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                const baseUrl = isLocal ? 'http://localhost:3000' : window.location.origin;
-                
-                const url = `${baseUrl}/api/sheets?sheetId=${encodeURIComponent(config.sheetId)}&apiKey=${encodeURIComponent(config.apiKey)}&sheetName=${encodeURIComponent(config.sheetName)}`;
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/${encodeURIComponent(config.sheetName)}?key=${config.apiKey}`;
                 
                 const response = await fetch(url);
                 const data = await response.json();
 
                 if (data.error) {
-                    handleError(data.error);
+                    handleError(data.error.message);
                 } else if (data.values && data.values.length > 0) {
+                    // Structure : ARTISTE | TITRE | DUOS | TOP
                     const rows = data.values.slice(1);
+                    
                     allSongs = rows
                         .map((row) => ({
-                            nom: row[0] || '',
-                            artiste: row[1] || '',
-                            duo: row[2]?.toLowerCase() === 'oui',
-                            top: row[3]?.toLowerCase() === 'oui',
-                            genre: row[4] || '',
-                            difficulte: row[5] || '',
+                            artiste: row[0] || '',
+                            nom: row[1] || '',
+                            duo: (row[2] || '').toLowerCase() === 'oui',
+                            top: (row[3] || '').toLowerCase() === 'oui',
                         }))
-                        .filter(song => song.nom);
+                        .filter(song => song.nom && song.artiste);
 
-                    songCount.textContent = `${allSongs.length} chansons disponibles`;
-                    tabsContainer.classList.remove('hidden');
-                    searchContainer.classList.remove('hidden');
-                    configRequired.classList.add('hidden');
-                    filterSongs();
-                    renderSongs();
-                    loadingState.classList.add('hidden');
+                    if (allSongs.length === 0) {
+                        handleError('Aucune chanson trouvée. Vérifiez votre Google Sheet.');
+                    } else {
+                        songCount.textContent = `${allSongs.length} chansons disponibles`;
+                        tabsContainer.classList.remove('hidden');
+                        searchContainer.classList.remove('hidden');
+                        configRequired.classList.add('hidden');
+                        filterSongs();
+                        renderSongs();
+                        loadingState.classList.add('hidden');
+                    }
                 } else {
                     handleError('Aucune donnée trouvée');
                 }
@@ -344,9 +356,9 @@
         function handleError(message) {
             let friendlyMessage = message;
             if (message.includes('Invalid API key')) {
-                friendlyMessage = '❌ Clé API invalide. Vérifiez votre configuration.';
+                friendlyMessage = '❌ Clé API invalide ou expirée. Attendez 5-10 minutes et réessayez.';
             } else if (message.includes('Requested range contains a blank range')) {
-                friendlyMessage = '❌ Le nom de la feuille est incorrect. Vérifiez dans votre Google Sheet.';
+                friendlyMessage = '❌ Le nom de la feuille est incorrect. Vérifiez en bas de votre Google Sheet.';
             } else if (message.includes('permission')) {
                 friendlyMessage = '❌ Le Sheet n\'est pas public. Rendez-le public dans les paramètres de partage.';
             }
@@ -381,12 +393,10 @@
         function renderSongs() {
             filterSongs();
 
-            // Mettre à jour le compte
             const count = filteredSongs.length;
             resultText.textContent = `${count} chanson${count !== 1 ? 's' : ''} trouvée${count !== 1 ? 's' : ''}`;
             resultsCount.classList.remove('hidden');
 
-            // Afficher/masquer les éléments
             if (filteredSongs.length === 0) {
                 songsGrid.innerHTML = '';
                 emptyState.classList.remove('hidden');
@@ -406,8 +416,6 @@
 
                         <div class="flex flex-wrap gap-2 mt-3">
                             ${song.duo ? '<span class="inline-flex items-center gap-1 bg-blue-500/40 px-2 py-1 rounded text-xs font-semibold text-blue-200">👥 Duo</span>' : ''}
-                            ${song.genre ? `<span class="inline-block bg-purple-500/40 px-2 py-1 rounded text-xs text-purple-200">${song.genre}</span>` : ''}
-                            ${song.difficulte ? `<span class="inline-block bg-orange-500/40 px-2 py-1 rounded text-xs text-orange-200">${song.difficulte}</span>` : ''}
                         </div>
                     </div>
                 `).join('');
