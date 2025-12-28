@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Paramètres manquants' });
     }
 
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${1F331OHvagDXQmbJAhKopW3YoXRo1JhMQN-iQq3o45lQ}/values/${encodeURIComponent(Soirées)}?key=${AIzaSyB8wDUfgffnJBvv48Q70Kxa4ZSAABhElGA}`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName)}?key=${apiKey}`;
     
     const response = await fetch(url);
     const data = await response.json();
